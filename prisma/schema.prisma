@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  name         String?
+  avatarUrl    String?  @map("avatar_url")
+  bio          String?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  books        Book[]
+
+  @@map("users")
+}
+
+model Book {
+  id              String    @id @default(uuid())
+  userId          String    @map("user_id")
+  title           String
+  author          String
+  description     String?
+  posterUrl       String?   @map("poster_url")
+  externalLink    String?   @map("external_link")
+  ownershipStatus String    @map("ownership_status")
+  readingStatus   String    @map("reading_status")
+  isFavorite      Boolean   @default(false) @map("is_favorite")
+  dateStarted     DateTime? @map("date_started")
+  dateFinished    DateTime? @map("date_finished")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  user   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  genres BookGenre[]
+
+  @@index([userId])
+  @@map("books")
+}
+
+model BookGenre {
+  bookId  String @map("book_id")
+  genreId String @map("genre_id")
+
+  book  Book  @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  genre Genre @relation(fields: [genreId], references: [id], onDelete: Cascade)
+
+  @@id([bookId, genreId])
+  @@index([genreId])
+  @@map("book_genres")
+}
+
+model Genre {
+  id        String      @id @default(uuid())
+  name      String      @unique
+  sortOrder Int         @default(0) @map("sort_order")
+  books     BookGenre[]
+
+  @@map("genres")
+}

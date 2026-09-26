@@ -27,3 +27,11 @@ Thumbs.db
 # IDE
 .idea/
 .vscode/
+
+/src/generated/prisma
+
+# Prisma agent skills (tooling installed by `prisma init`, not application code)
+.agents/
+.claude/
+.windsurf/
+skills-lock.json
