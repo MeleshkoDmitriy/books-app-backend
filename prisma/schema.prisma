@@ -32,35 +32,14 @@ model Book {
   ownershipStatus String    @map("ownership_status")
   readingStatus   String    @map("reading_status")
   isFavorite      Boolean   @default(false) @map("is_favorite")
+  genres          String[]  @default([])
   dateStarted     DateTime? @map("date_started")
   dateFinished    DateTime? @map("date_finished")
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
 
-  user   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  genres BookGenre[]
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("books")
-}
-
-model BookGenre {
-  bookId  String @map("book_id")
-  genreId String @map("genre_id")
-
-  book  Book  @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  genre Genre @relation(fields: [genreId], references: [id], onDelete: Cascade)
-
-  @@id([bookId, genreId])
-  @@index([genreId])
-  @@map("book_genres")
-}
-
-model Genre {
-  id        String      @id @default(uuid())
-  name      String      @unique
-  sortOrder Int         @default(0) @map("sort_order")
-  books     BookGenre[]
-
-  @@map("genres")
 }
