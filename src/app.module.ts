@@ -6,7 +6,11 @@ import { PrismaModule } from './prisma/index.js';
 import { HealthModule } from './health/index.js';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), PrismaModule, HealthModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    PrismaModule,
+    HealthModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

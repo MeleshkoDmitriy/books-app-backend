@@ -5,7 +5,7 @@ REST API for a personal book tracker.
 ## Stack
 
 - NestJS + TypeScript
-- Prisma + PostgreSQL (Neon)
+- Prisma + PostgreSQL
 - npm
 
 ## Requirements
@@ -19,7 +19,7 @@ npm install
 npm run start:dev
 ```
 
-Runs on http://localhost:3000 by default.
+Runs on http://localhost:3001 by default.
 
 ## Scripts
 

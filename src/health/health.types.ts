@@ -1,5 +1,5 @@
 export type HealthResponse = {
-  status: 'ok',
-  uptime: number,
-  timestamp: string,
+  status: 'ok';
+  uptime: number;
+  timestamp: string;
 };
