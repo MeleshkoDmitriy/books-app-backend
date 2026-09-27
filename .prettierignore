@@ -1,0 +1,12 @@
+# Generated and vendored code
+src/generated
+dist
+node_modules
+package-lock.json
+coverage
+
+# Agent tooling installed by `prisma init` — not our code
+.agents
+.claude
+.windsurf
+skills-lock.json

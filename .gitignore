@@ -35,3 +35,6 @@ Thumbs.db
 .claude/
 .windsurf/
 skills-lock.json
+
+# Husky runtime (generated). Hook files in .husky/ are committed.
+.husky/_
