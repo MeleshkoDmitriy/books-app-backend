@@ -24,7 +24,11 @@ export class PrismaService
 
     // Prisma 7 requires a driver adapter. PrismaPg owns the pool it creates,
     // so $disconnect() below is enough to release connections.
-    super({ adapter: new PrismaPg({ connectionString }) });
+    super({
+      adapter: new PrismaPg({ connectionString }),
+      // passwordHash never leaves the database unless explicitly requested
+      omit: { user: { passwordHash: true } },
+    });
   }
 
   async onModuleInit(): Promise<void> {
