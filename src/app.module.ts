@@ -5,10 +5,11 @@ import { AppService } from './app.service.js';
 import { PrismaModule } from './prisma/index.js';
 import { HealthModule } from './health/index.js';
 import { AuthModule } from './auth/index.js';
+import { validateEnv } from './config/index.js';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }),
     PrismaModule,
     HealthModule,
     AuthModule,
