@@ -16,16 +16,12 @@ export class PrismaService
   private readonly logger = new Logger(PrismaService.name);
 
   constructor(config: ConfigService) {
-    const connectionString = config.get<string>('DATABASE_URL');
-
-    if (!connectionString) {
-      throw new Error('DATABASE_URL is not set');
-    }
-
-    // Prisma 7 requires a driver adapter. PrismaPg owns the pool it creates,
-    // so $disconnect() below is enough to release connections.
     super({
-      adapter: new PrismaPg({ connectionString }),
+      adapter: new PrismaPg({
+        connectionString: config.getOrThrow<string>('DATABASE_URL'),
+      }),
+      // Prisma 7 requires a driver adapter. PrismaPg owns the pool it creates,
+      // so $disconnect() below is enough to release connections.
       // passwordHash never leaves the database unless explicitly requested
       omit: { user: { passwordHash: true } },
     });
