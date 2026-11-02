@@ -12,7 +12,7 @@ async function bootstrap() {
   app.setGlobalPrefix(config.getOrThrow<string>('HTTP_PREFIX'));
   app.use(helmet());
   app.enableCors({
-    origin: config,
+    origin: config.getOrThrow<string>('HTTP_CORS_ORIGIN'),
   });
   app.enableShutdownHooks();
 
