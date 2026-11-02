@@ -3,12 +3,17 @@ import { AppModule } from './app.module.js';
 import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const config = app.get(ConfigService);
 
   app.setGlobalPrefix(config.getOrThrow<string>('HTTP_PREFIX'));
+  app.use(helmet());
+  app.enableCors({
+    origin: config,
+  });
   app.enableShutdownHooks();
 
   app.useGlobalPipes(
