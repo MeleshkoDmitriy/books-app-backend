@@ -1,4 +1,4 @@
-import type { SafeUser } from '../users/users.types.js';
+import type { SafeUser } from '@/users/users.types.js';
 
 export type JwtPayload = {
   sub: string;
