@@ -6,7 +6,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { hash, verify } from 'argon2';
-import { PrismaService } from '../prisma/index.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 import { LoginDto, RegisterDto } from './dto/index.js';
 
 const ACCESS_TOKEN_TTL = '15m';
