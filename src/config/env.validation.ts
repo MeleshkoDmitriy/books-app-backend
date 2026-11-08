@@ -18,6 +18,12 @@ export enum Environment {
   Test = 'test',
 }
 
+export enum JwtAlgorithm {
+  HS256 = 'HS256',
+  HS384 = 'HS384',
+  HS512 = 'HS512',
+}
+
 const TTL_PATTERN = /^\d+[smhd]$/;
 
 class EnvironmentVariables {
@@ -57,6 +63,9 @@ class EnvironmentVariables {
 
   @Matches(TTL_PATTERN)
   JWT_REFRESH_TTL: string;
+
+  @IsEnum(JwtAlgorithm)
+  JWT_ALGORITHM: JwtAlgorithm;
 }
 
 export function validateEnv(config: Record<string, unknown>) {

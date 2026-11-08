@@ -4,20 +4,21 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService, type JwtSignOptions } from '@nestjs/jwt';
 import { hash, verify } from 'argon2';
 import { PrismaService } from '@/prisma/prisma.service.js';
 import { LoginDto, RegisterDto } from './dto/index.js';
+import type { JwtPayload, Tokens } from './auth.types.js';
 
-const ACCESS_TOKEN_TTL = '15m';
-const REFRESH_TOKEN_TTL = '30d';
-
+type ExpiresIn = NonNullable<JwtSignOptions['expiresIn']>;
 const INVALID_CREDENTIALS_MESSAGE = 'Invalid email or password';
 
 @Injectable()
 export class AuthService {
   private readonly accessTokenSecret: string;
   private readonly refreshTokenSecret: string;
+  private readonly accessTokenTtl: ExpiresIn;
+  private readonly refreshTokenTtl: ExpiresIn;
 
   constructor(
     private readonly prisma: PrismaService,
@@ -26,19 +27,21 @@ export class AuthService {
   ) {
     this.accessTokenSecret = config.getOrThrow<string>('JWT_ACCESS_SECRET');
     this.refreshTokenSecret = config.getOrThrow<string>('JWT_REFRESH_SECRET');
+    this.accessTokenTtl = config.getOrThrow<ExpiresIn>('JWT_ACCESS_TTL');
+    this.refreshTokenTtl = config.getOrThrow<ExpiresIn>('JWT_REFRESH_TTL');
   }
 
-  private async issueTokens(userId: string) {
-    const payload = { sub: userId };
+  private async issueTokens(userId: string): Promise<Tokens> {
+    const payload: JwtPayload = { sub: userId };
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwt.signAsync(payload, {
         secret: this.accessTokenSecret,
-        expiresIn: ACCESS_TOKEN_TTL,
+        expiresIn: this.accessTokenTtl,
       }),
       this.jwt.signAsync(payload, {
         secret: this.refreshTokenSecret,
-        expiresIn: REFRESH_TOKEN_TTL,
+        expiresIn: this.refreshTokenTtl,
       }),
     ]);
 
