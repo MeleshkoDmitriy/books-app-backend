@@ -8,10 +8,20 @@ import { JwtService, type JwtSignOptions } from '@nestjs/jwt';
 import { hash, verify } from 'argon2';
 import { PrismaService } from '@/prisma/prisma.service.js';
 import { LoginDto, RegisterDto } from './dto/index.js';
-import type { JwtPayload, Tokens } from './auth.types.js';
+import type { AuthResult, JwtPayload, Tokens } from './auth.types.js';
+import { Prisma } from '@/generated/prisma/client.js';
 
 type ExpiresIn = NonNullable<JwtSignOptions['expiresIn']>;
 const INVALID_CREDENTIALS_MESSAGE = 'Invalid email or password';
+
+const EMAIL_TAKEN_MESSAGE = 'Email is already taken';
+
+const isUniqueViolation = (error: unknown): boolean => {
+  return (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === 'P2002'
+  );
+};
 
 @Injectable()
 export class AuthService {
@@ -51,24 +61,24 @@ export class AuthService {
     };
   }
 
-  async register(dto: RegisterDto) {
-    const isEmailAlreadyTaken = await this.prisma.user.findUnique({
-      where: { email: dto.email },
-      select: { id: true },
-    });
+  async register(dto: RegisterDto): Promise<AuthResult> {
+    const passwordHash = await hash(dto.password);
 
-    if (isEmailAlreadyTaken) {
-      throw new ConflictException('Email is already taken');
-    }
+    const user = await this.prisma.user
+      .create({
+        data: {
+          email: dto.email,
+          name: dto.name,
+          passwordHash,
+        },
+      })
+      .catch((error: unknown) => {
+        if (isUniqueViolation(error)) {
+          throw new ConflictException(EMAIL_TAKEN_MESSAGE);
+        }
 
-    const hashedPassword = await hash(dto.password);
-
-    const user = await this.prisma.user.create({
-      data: {
-        email: dto.email,
-        passwordHash: hashedPassword,
-      },
-    });
+        throw error;
+      });
 
     const tokens = await this.issueTokens(user.id);
 
@@ -78,7 +88,7 @@ export class AuthService {
     };
   }
 
-  async login(dto: LoginDto) {
+  async login(dto: LoginDto): Promise<AuthResult> {
     const userRecord = await this.prisma.user.findUnique({
       where: { email: dto.email },
       omit: { passwordHash: false },
