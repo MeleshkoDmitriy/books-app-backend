@@ -7,7 +7,8 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService, type JwtSignOptions } from '@nestjs/jwt';
 import { hash, verify } from 'argon2';
 import { PrismaService } from '@/prisma/prisma.service.js';
-import { LoginDto, RegisterDto } from './dto/index.js';
+import { UsersService } from '@/users/users.service.js';
+import { LoginDto, RefreshDto, RegisterDto } from './dto/index.js';
 import type { AuthResult, JwtPayload, Tokens } from './auth.types.js';
 import { Prisma } from '@/generated/prisma/client.js';
 
@@ -15,6 +16,8 @@ type ExpiresIn = NonNullable<JwtSignOptions['expiresIn']>;
 const INVALID_CREDENTIALS_MESSAGE = 'Invalid email or password';
 
 const EMAIL_TAKEN_MESSAGE = 'Email is already taken';
+
+const INVALID_REFRESH_TOKEN_MESSAGE = 'Invalid refresh token';
 
 const isUniqueViolation = (error: unknown): boolean => {
   return (
@@ -33,6 +36,7 @@ export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
+    private readonly users: UsersService,
     config: ConfigService,
   ) {
     this.accessTokenSecret = config.getOrThrow<string>('JWT_ACCESS_SECRET');
@@ -112,5 +116,23 @@ export class AuthService {
       user,
       ...tokens,
     };
+  }
+
+  async refresh(dto: RefreshDto): Promise<Tokens> {
+    const payload = await this.jwt
+      .verifyAsync<JwtPayload>(dto.refreshToken, {
+        secret: this.refreshTokenSecret,
+      })
+      .catch(() => {
+        throw new UnauthorizedException(INVALID_REFRESH_TOKEN_MESSAGE);
+      });
+
+    const user = await this.users.findById(payload.sub);
+
+    if (!user) {
+      throw new UnauthorizedException(INVALID_REFRESH_TOKEN_MESSAGE);
+    }
+
+    return this.issueTokens(user.id);
   }
 }
