@@ -1,7 +1,9 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Public } from './decorators/public.decorator.js';
 import { LoginDto, RegisterDto } from './dto/index.js';
 import { AuthService } from './auth.service.js';
 
+@Public()
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
