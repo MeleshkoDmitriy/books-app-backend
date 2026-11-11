@@ -10,6 +10,7 @@ async function bootstrap() {
   const config = app.get(ConfigService);
 
   app.setGlobalPrefix(config.getOrThrow<string>('HTTP_PREFIX'));
+  app.set('trust proxy', 1);
   app.use(helmet());
   app.enableCors({
     origin: config.getOrThrow<string>('HTTP_CORS_ORIGIN'),
