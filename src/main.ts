@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
+import { Environment, setupSwagger } from './config/index.js';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -24,6 +25,10 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  if (config.getOrThrow<Environment>('NODE_ENV') !== Environment.Production) {
+    setupSwagger(app);
+  }
 
   await app.listen(config.getOrThrow<number>('HTTP_PORT'));
 }
