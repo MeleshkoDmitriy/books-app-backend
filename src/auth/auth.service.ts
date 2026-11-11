@@ -9,15 +9,11 @@ import { hash, verify } from 'argon2';
 import { PrismaService } from '@/prisma/prisma.service.js';
 import { UsersService } from '@/users/users.service.js';
 import { LoginDto, RefreshDto, RegisterDto } from './dto/index.js';
+import { AUTH_ERRORS } from './auth.messages.js';
 import type { AuthResult, JwtPayload, Tokens } from './auth.types.js';
 import { Prisma } from '@/generated/prisma/client.js';
 
 type ExpiresIn = NonNullable<JwtSignOptions['expiresIn']>;
-const INVALID_CREDENTIALS_MESSAGE = 'Invalid email or password';
-
-const EMAIL_TAKEN_MESSAGE = 'Email is already taken';
-
-const INVALID_REFRESH_TOKEN_MESSAGE = 'Invalid refresh token';
 
 const isUniqueViolation = (error: unknown): boolean => {
   return (
@@ -78,7 +74,7 @@ export class AuthService {
       })
       .catch((error: unknown) => {
         if (isUniqueViolation(error)) {
-          throw new ConflictException(EMAIL_TAKEN_MESSAGE);
+          throw new ConflictException(AUTH_ERRORS.emailTaken);
         }
 
         throw error;
@@ -99,13 +95,13 @@ export class AuthService {
     });
 
     if (!userRecord) {
-      throw new UnauthorizedException(INVALID_CREDENTIALS_MESSAGE);
+      throw new UnauthorizedException(AUTH_ERRORS.invalidCredentials);
     }
 
     const passwordMatches = await verify(userRecord.passwordHash, dto.password);
 
     if (!passwordMatches) {
-      throw new UnauthorizedException(INVALID_CREDENTIALS_MESSAGE);
+      throw new UnauthorizedException(AUTH_ERRORS.invalidCredentials);
     }
 
     const { passwordHash: _passwordHash, ...user } = userRecord;
@@ -124,13 +120,13 @@ export class AuthService {
         secret: this.refreshTokenSecret,
       })
       .catch(() => {
-        throw new UnauthorizedException(INVALID_REFRESH_TOKEN_MESSAGE);
+        throw new UnauthorizedException(AUTH_ERRORS.invalidRefreshToken);
       });
 
     const user = await this.users.findById(payload.sub);
 
     if (!user) {
-      throw new UnauthorizedException(INVALID_REFRESH_TOKEN_MESSAGE);
+      throw new UnauthorizedException(AUTH_ERRORS.invalidRefreshToken);
     }
 
     return this.issueTokens(user.id);
