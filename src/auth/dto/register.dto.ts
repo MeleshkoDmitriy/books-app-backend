@@ -1,4 +1,4 @@
-import { normalizeEmail, trimString } from '@/common/index.js';
+import { API_EXAMPLES, normalizeEmail, trimString } from '@/common/index.js';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
@@ -9,18 +9,26 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { AUTH_LIMITS } from '../auth.constants.js';
 
 export class RegisterDto {
-  @ApiProperty({ example: 'john@example.com', maxLength: 254 })
+  @ApiProperty({
+    example: API_EXAMPLES.email,
+    maxLength: AUTH_LIMITS.email.maxLength,
+  })
   @Transform(normalizeEmail)
   @IsEmail()
-  @MaxLength(254)
+  @MaxLength(AUTH_LIMITS.email.maxLength)
   email: string;
 
-  @ApiProperty({ example: 'supersecret', minLength: 8, maxLength: 128 })
+  @ApiProperty({
+    example: 'supersecret',
+    minLength: 8,
+    maxLength: AUTH_LIMITS.password.maxLength,
+  })
   @IsString()
   @MinLength(8)
-  @MaxLength(128)
+  @MaxLength(AUTH_LIMITS.password.maxLength)
   password: string;
 
   @ApiPropertyOptional({ example: 'John', maxLength: 50 })

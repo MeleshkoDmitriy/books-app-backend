@@ -4,15 +4,15 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { ApiUnauthorized } from '@/common/index.js';
 import { CurrentUser } from '@/auth/decorators/current-user.decorator.js';
 import { UserResponseDto } from './dto/index.js';
 import type { SafeUser } from './users.types.js';
 
 @ApiTags('Users')
 @ApiBearerAuth()
-@ApiUnauthorizedResponse({ description: 'Missing or invalid access token' })
+@ApiUnauthorized()
 @Controller('users')
 export class UsersController {
   @ApiOperation({ summary: 'Get the current user' })

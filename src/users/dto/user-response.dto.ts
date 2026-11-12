@@ -1,3 +1,4 @@
+import { API_EXAMPLES } from '@/common/index.js';
 import { ApiProperty } from '@nestjs/swagger';
 import type { SafeUser } from '../users.types.js';
 
@@ -5,7 +6,7 @@ export class UserResponseDto implements SafeUser {
   @ApiProperty({ format: 'uuid' })
   id: string;
 
-  @ApiProperty({ example: 'john@example.com' })
+  @ApiProperty({ example: API_EXAMPLES.email })
   email: string;
 
   @ApiProperty({ type: String, nullable: true, example: 'John' })

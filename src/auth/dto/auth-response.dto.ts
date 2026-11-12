@@ -1,12 +1,13 @@
+import { API_EXAMPLES } from '@/common/index.js';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserResponseDto } from '@/users/dto/user-response.dto.js';
 import type { AuthResult, Tokens } from '../auth.types.js';
 
 export class TokensResponseDto implements Tokens {
-  @ApiProperty({ example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' })
+  @ApiProperty({ example: API_EXAMPLES.jwt })
   accessToken: string;
 
-  @ApiProperty({ example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' })
+  @ApiProperty({ example: API_EXAMPLES.jwt })
   refreshToken: string;
 }
 

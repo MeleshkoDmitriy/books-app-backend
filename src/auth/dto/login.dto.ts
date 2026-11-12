@@ -1,18 +1,25 @@
-import { normalizeEmail } from '@/common/index.js';
+import { API_EXAMPLES, normalizeEmail } from '@/common/index.js';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { AUTH_LIMITS } from '../auth.constants.js';
 
 export class LoginDto {
-  @ApiProperty({ example: 'john@example.com', maxLength: 254 })
+  @ApiProperty({
+    example: API_EXAMPLES.email,
+    maxLength: AUTH_LIMITS.email.maxLength,
+  })
   @Transform(normalizeEmail)
   @IsEmail()
-  @MaxLength(254)
+  @MaxLength(AUTH_LIMITS.email.maxLength)
   email: string;
 
-  @ApiProperty({ example: 'supersecret', minLength: 1, maxLength: 128 })
+  @ApiProperty({
+    example: 'supersecret',
+    maxLength: AUTH_LIMITS.password.maxLength,
+  })
   @IsString()
   @IsNotEmpty()
-  @MaxLength(128)
+  @MaxLength(AUTH_LIMITS.password.maxLength)
   password: string;
 }

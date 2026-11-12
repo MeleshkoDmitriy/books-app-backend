@@ -13,10 +13,14 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-  ApiTooManyRequestsResponse,
-  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import {
+  API_ERRORS,
+  ApiThrottled,
+  ApiUnauthorized,
+  ApiValidationFailed,
+} from '@/common/index.js';
 import { THROTTLE } from '@/config/index.js';
 import { AUTH_ERRORS } from './auth.messages.js';
 import { Public } from './decorators/public.decorator.js';
@@ -38,9 +42,9 @@ export class AuthController {
 
   @ApiOperation({ summary: 'Register a new account' })
   @ApiCreatedResponse({ type: AuthResponseDto })
-  @ApiBadRequestResponse({ description: 'Invalid input data' })
+  @ApiValidationFailed()
   @ApiConflictResponse({ description: AUTH_ERRORS.emailTaken })
-  @ApiTooManyRequestsResponse({ description: 'Too many requests' })
+  @ApiThrottled()
   @Post('register')
   register(@Body() dto: RegisterDto): Promise<AuthResponseDto> {
     return this.authService.register(dto);
@@ -48,9 +52,9 @@ export class AuthController {
 
   @ApiOperation({ summary: 'Log in with email and password' })
   @ApiOkResponse({ type: AuthResponseDto })
-  @ApiBadRequestResponse({ description: 'Invalid input data' })
-  @ApiUnauthorizedResponse({ description: AUTH_ERRORS.invalidCredentials })
-  @ApiTooManyRequestsResponse({ description: 'Too many requests' })
+  @ApiValidationFailed()
+  @ApiUnauthorized(AUTH_ERRORS.invalidCredentials)
+  @ApiThrottled()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @Throttle({ default: THROTTLE.login })
@@ -60,9 +64,9 @@ export class AuthController {
 
   @ApiOperation({ summary: 'Get a new token pair using a refresh token' })
   @ApiOkResponse({ type: TokensResponseDto })
-  @ApiBadRequestResponse({ description: 'Malformed refresh token' })
-  @ApiUnauthorizedResponse({ description: AUTH_ERRORS.invalidRefreshToken })
-  @ApiTooManyRequestsResponse({ description: 'Too many requests' })
+  @ApiBadRequestResponse({ description: API_ERRORS.malformedRefreshToken })
+  @ApiUnauthorized(AUTH_ERRORS.invalidRefreshToken)
+  @ApiThrottled()
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   refresh(@Body() dto: RefreshDto): Promise<TokensResponseDto> {
