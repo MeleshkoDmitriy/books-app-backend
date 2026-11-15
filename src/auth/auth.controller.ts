@@ -16,7 +16,6 @@ import {
 } from '@nestjs/swagger';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import {
-  API_ERRORS,
   ApiThrottled,
   ApiUnauthorized,
   ApiValidationFailed,
@@ -64,7 +63,7 @@ export class AuthController {
 
   @ApiOperation({ summary: 'Get a new token pair using a refresh token' })
   @ApiOkResponse({ type: TokensResponseDto })
-  @ApiBadRequestResponse({ description: API_ERRORS.malformedRefreshToken })
+  @ApiBadRequestResponse({ description: AUTH_ERRORS.malformedRefreshToken })
   @ApiUnauthorized(AUTH_ERRORS.invalidRefreshToken)
   @ApiThrottled()
   @Post('refresh')
