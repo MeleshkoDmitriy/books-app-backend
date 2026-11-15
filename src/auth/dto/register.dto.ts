@@ -22,12 +22,12 @@ export class RegisterDto {
   email: string;
 
   @ApiProperty({
-    example: 'supersecret',
-    minLength: 8,
+    example: API_EXAMPLES.password,
+    minLength: AUTH_LIMITS.password.minLength,
     maxLength: AUTH_LIMITS.password.maxLength,
   })
   @IsString()
-  @MinLength(8)
+  @MinLength(AUTH_LIMITS.password.minLength)
   @MaxLength(AUTH_LIMITS.password.maxLength)
   password: string;
 

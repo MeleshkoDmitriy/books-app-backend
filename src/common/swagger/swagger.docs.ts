@@ -7,5 +7,7 @@ export const API_ERRORS = {
 
 export const API_EXAMPLES = {
   email: 'john@example.com',
+  password: 'supersecret',
+  name: 'John',
   jwt: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
 } as const;

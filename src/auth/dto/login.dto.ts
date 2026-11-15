@@ -15,7 +15,7 @@ export class LoginDto {
   email: string;
 
   @ApiProperty({
-    example: 'supersecret',
+    example: API_EXAMPLES.password,
     maxLength: AUTH_LIMITS.password.maxLength,
   })
   @IsString()
