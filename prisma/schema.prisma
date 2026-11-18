@@ -11,7 +11,7 @@ model User {
   id           String   @id @default(uuid())
   email        String   @unique
   passwordHash String   @map("password_hash")
-  name         String?
+  name         String
   avatarUrl    String?  @map("avatar_url")
   bio          String?
   createdAt    DateTime @default(now()) @map("created_at")
