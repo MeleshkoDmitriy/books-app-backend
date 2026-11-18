@@ -10,7 +10,7 @@ import { THROTTLE, validateEnv } from './config/index.js';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }),
-    ThrottlerModule.forRoot([THROTTLE.global]),
+    ThrottlerModule.forRoot([THROTTLE.auth]),
     PrismaModule,
     HealthModule,
     AuthModule,
