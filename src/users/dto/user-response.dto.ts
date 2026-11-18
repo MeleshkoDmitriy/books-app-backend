@@ -9,8 +9,8 @@ export class UserResponseDto implements SafeUser {
   @ApiProperty({ example: API_EXAMPLES.email })
   email: string;
 
-  @ApiProperty({ type: String, nullable: true, example: 'John' })
-  name: string | null;
+  @ApiProperty({ example: API_EXAMPLES.name })
+  name: string;
 
   @ApiProperty({ type: String, nullable: true })
   avatarUrl: string | null;

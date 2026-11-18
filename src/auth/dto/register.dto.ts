@@ -1,10 +1,9 @@
 import { API_EXAMPLES, normalizeEmail, trimString } from '@/common/index.js';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
   IsEmail,
   IsNotEmpty,
-  IsOptional,
   IsString,
   MaxLength,
   MinLength,
@@ -31,11 +30,13 @@ export class RegisterDto {
   @MaxLength(AUTH_LIMITS.password.maxLength)
   password: string;
 
-  @ApiPropertyOptional({ example: 'John', maxLength: 50 })
-  @IsOptional()
+  @ApiProperty({
+    example: API_EXAMPLES.name,
+    maxLength: AUTH_LIMITS.name.maxLength,
+  })
   @Transform(trimString)
   @IsString()
   @IsNotEmpty()
-  @MaxLength(50)
-  name?: string;
+  @MaxLength(AUTH_LIMITS.name.maxLength)
+  name: string;
 }
